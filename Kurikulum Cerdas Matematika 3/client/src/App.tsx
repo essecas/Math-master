@@ -21,5 +21,6 @@ function App() {
     </Router>
   );
 }
-
+<Route path="/login" element={<Login />} />
+<Route path="/quiz" element={<Quiz />} />
 export default App;
