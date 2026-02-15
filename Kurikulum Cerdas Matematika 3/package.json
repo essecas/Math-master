@@ -6,6 +6,10 @@
   "scripts": {
     "build": "vite build && tsc --project tsconfig.server.json",
     "start": "tsx watch scripts/dev.ts"
+    "devDependencies": {
+  "vite": "6.3.1",
+  "@vitejs/plugin-react": "4.3.4"
+}
   },
   "dependencies": {
     "@radix-ui/react-checkbox": "1.1.3",
