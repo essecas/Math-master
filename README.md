@@ -1,2 +1,2 @@
 # Math-master
-App belajar matematika Mimo
+App belajar matematika
