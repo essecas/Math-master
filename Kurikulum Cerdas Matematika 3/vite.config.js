@@ -1,95 +1,48 @@
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import path from 'path';
-
-export const vitePort = 3000;
-export default defineConfig(({ mode }) => 
-  {
-  return {
-    plugins: [
-      react(),
-      // Custom plugin to handle source map requests
-      {
-        name: 'handle-source-map-requests',
-        apply: 'serve',
-        configureServer(server) {
-          server.middlewares.use((req, res, next) => {
-            if (req.url && req.url.endsWith('.map')) {
-              const cleanUrl = req.url.split('?')[0];
-              req.url = cleanUrl;
-            }
-            next();
-          });
-        },
-      },
-      // Custom plugin to add CORS headers
-      {
-        name: 'add-cors-headers',
-        apply: 'serve',
-        configureServer(server) {
-          server.middlewares.use((req, res, next) => {
-            res.setHeader('Access-Control-Allow-Origin', '*');
-            res.setHeader(
-              'Access-Control-Allow-Methods',
-              'GET, POST, PUT, DELETE, PATCH, OPTIONS',
-            );
-            res.setHeader(
-              'Access-Control-Allow-Headers',
-              'Content-Type, Authorization, X-Requested-With',
-            );
-            if (req.method === 'OPTIONS') {
-              res.statusCode = 204;
-              return res.end();
-            }
-            next();
-          });
-        },
-      },
-    ].filter(Boolean),
-    resolve: {
-      alias: {
-        '@': path.resolve(__dirname, './client/src'),
-      },
-    },
-    root: path.join(process.cwd(), 'client'),
-    build: {
-      outDir: path.join(process.cwd(), 'dist/public'),
-      emptyOutDir: true,
-    },
-    clearScreen: false,
-    server: {
-      hmr: {
-        overlay: false,
-      },
-      host: true,
-      port: vitePort,
-      allowedHosts: true,
-      cors: true,
-      proxy: {
-        '/api': {
-          target: 'http://localhost:3001',
-          changeOrigin: true,
-          secure: false,
-          ws: true,
-          configure: (proxy, options) => {
-            proxy.on('error', (err, req, res) => {
-              console.log('proxy error', err);
-            });
-            proxy.on('proxyReq', (proxyReq, req, res) => {
-              console.log('Sending Request to the Target:', req.method, req.url);
-            });
-            proxy.on('proxyRes', (proxyRes, req, res) => {
-              console.log('Received Response from the Target:', proxyRes.statusCode, req.url);
-            });
-          },
-        },
-      },
-    },
-    css: {
-      devSourcemap: true,
-    },
-    esbuild: {
-      sourcemap: true,
-    },
-  };
-});
+{
+  "name": "math-master",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@radix-ui/react-checkbox": "1.1.3",
+    "@radix-ui/react-dialog": "1.1.5",
+    "@radix-ui/react-label": "2.1.1",
+    "@radix-ui/react-popover": "1.1.5",
+    "@radix-ui/react-progress": "1.1.1",
+    "@radix-ui/react-select": "2.1.5",
+    "@radix-ui/react-slider": "1.2.2",
+    "@radix-ui/react-slot": "1.1.1",
+    "@radix-ui/react-switch": "1.1.2",
+    "@radix-ui/react-toggle": "1.1.1",
+    "@radix-ui/react-tooltip": "1.1.7",
+    "bcryptjs": "^3.0.3",
+    "canvas-confetti": "^1.9.4",
+    "class-variance-authority": "0.7.1",
+    "clsx": "2.1.1",
+    "cmdk": "1.1.1",
+    "express": "5.1.0",
+    "express-session": "^1.19.0",
+    "lucide-react": "0.474.0",
+    "react": "18.2.0",
+    "react-confetti": "^6.4.0",
+    "react-dom": "18.2.0",
+    "react-router-dom": "^7.13.0",
+    "tailwind-merge": "3.2.0",
+    "tailwindcss-animate": "1.0.7"
+  },
+  "devDependencies": {
+    "@types/react": "18.2.0",
+    "@types/react-dom": "18.2.0",
+    "@vitejs/plugin-react": "4.3.4",
+    "autoprefixer": "10.4.18",
+    "postcss": "8.4.35",
+    "tailwindcss": "3.4.17",
+    "typescript": "5.8.2",
+    "vite": "6.3.1"
+  }
+}
