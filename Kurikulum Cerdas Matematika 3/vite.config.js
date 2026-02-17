@@ -1,13 +1,7 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
 
-export default defineConfig({
-  plugins: [react()],
-  base: '/',  // <-- tambah ini kalau belum ada
-})
 export const vitePort = 3000;
 
 export default defineConfig(({ mode }) => {
@@ -20,9 +14,7 @@ export default defineConfig(({ mode }) => {
         apply: 'serve',
         configureServer(server) {
           server.middlewares.use((req, res, next) => {
-            // Check if the request is for a source map file
             if (req.url && req.url.endsWith('.map')) {
-              // Rewrite the URL to remove the query string that's causing the issue
               const cleanUrl = req.url.split('?')[0];
               req.url = cleanUrl;
             }
@@ -36,7 +28,6 @@ export default defineConfig(({ mode }) => {
         apply: 'serve',
         configureServer(server) {
           server.middlewares.use((req, res, next) => {
-            // Add CORS headers to all responses
             res.setHeader('Access-Control-Allow-Origin', '*');
             res.setHeader(
               'Access-Control-Allow-Methods',
@@ -46,13 +37,10 @@ export default defineConfig(({ mode }) => {
               'Access-Control-Allow-Headers',
               'Content-Type, Authorization, X-Requested-With',
             );
-
-            // Handle OPTIONS requests
             if (req.method === 'OPTIONS') {
               res.statusCode = 204;
               return res.end();
             }
-
             next();
           });
         },
@@ -76,7 +64,7 @@ export default defineConfig(({ mode }) => {
       host: true,
       port: vitePort,
       allowedHosts: true,
-      cors: true, // Enable CORS in the dev server
+      cors: true,
       proxy: {
         '/api': {
           target: 'http://localhost:3001',
@@ -97,11 +85,9 @@ export default defineConfig(({ mode }) => {
         },
       },
     },
-    // Enable source maps for development
     css: {
       devSourcemap: true,
     },
-    // Ensure source maps are properly generated
     esbuild: {
       sourcemap: true,
     },
