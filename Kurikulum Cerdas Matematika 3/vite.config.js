@@ -3,8 +3,8 @@ import react from '@vitejs/plugin-react';
 import path from 'path';
 
 export const vitePort = 3000;
-
-export default defineConfig(({ mode }) => {
+export default defineConfig(({ mode }) => 
+  {
   return {
     plugins: [
       react(),
