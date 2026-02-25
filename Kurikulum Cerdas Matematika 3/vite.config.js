@@ -1,13 +1,51 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import path from 'path';
 
-// Konfigurasi utama Vite
-export default defineConfig({
-  plugins: [react()],
+export const vitePort = 3000;
+
+export default defineConfig(({ mode }) => ({
+  plugins: [
+    react(),
+    {
+      name: 'handle-source-map-requests',
+      apply: 'serve',
+      configureServer(server) {
+        server.middlewares.use((req, res, next) => {
+          if (req.url && req.url.endsWith('.map')) {
+            const cleanUrl = req.url.split('?')[0];
+            req.url = cleanUrl;
+          }
+          next();
+        });
+      },
+    },
+    {
+      name: 'add-cors-headers',
+      apply: 'serve',
+      configureServer(server) {
+        server.middlewares.use((req, res, next) => {
+          res.setHeader('Access-Control-Allow-Origin', '*');
+          res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+          res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+          if (req.method === 'OPTIONS') {
+            res.statusCode = 204;
+            return res.end();
+          }
+          next();
+        });
+      },
+    },
+  ],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
   server: {
-    port: 3000, // opsional, bisa diubah sesuai kebutuhan
+    port: vitePort,
   },
   build: {
-    outDir: 'dist', // hasil build akan keluar di folder dist
+    outDir: 'dist',
   },
-})
+}));
