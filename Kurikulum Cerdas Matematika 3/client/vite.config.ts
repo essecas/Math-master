@@ -4,90 +4,48 @@ import path from 'path';
 
 export const vitePort = 3000;
 
-export default defineConfig(({ mode }) => {
-  return {
-    plugins: [
-      react(),
-      {
-        name: 'handle-source-map-requests',
-        apply: 'serve',
-        configureServer(server) {
-          server.middlewares.use((req, res, next) => {
-            if (req.url && req.url.endsWith('.map')) {
-              const cleanUrl = req.url.split('?')[0];
-              req.url = cleanUrl;
-            }
-            next();
-          });
-        },
-      },
-      {
-        name: 'add-cors-headers',
-        apply: 'serve',
-        configureServer(server) {
-          server.middlewares.use((req, res, next) => {
-            res.setHeader('Access-Control-Allow-Origin', '*');
-            res.setHeader(
-              'Access-Control-Allow-Methods',
-              'GET, POST, PUT, DELETE, PATCH, OPTIONS',
-            );
-            res.setHeader(
-              'Access-Control-Allow-Headers',
-              'Content-Type, Authorization, X-Requested-With',
-            );
-            if (req.method === 'OPTIONS') {
-              res.statusCode = 204;
-              return res.end();
-            }
-            next();
-          });
-        },
-      },
-    ].filter(Boolean),
-    resolve: {
-      alias: {
-        '@': path.resolve(__dirname, './client/src'),
+export default defineConfig(({ mode }) => ({
+  plugins: [
+    react(),
+    {
+      name: 'handle-source-map-requests',
+      apply: 'serve',
+      configureServer(server) {
+        server.middlewares.use((req, res, next) => {
+          if (req.url && req.url.endsWith('.map')) {
+            const cleanUrl = req.url.split('?')[0];
+            req.url = cleanUrl;
+          }
+          next();
+        });
       },
     },
-    root: path.join(process.cwd(), 'client'),
-    build: {
-      outDir: path.join(process.cwd(), 'dist/public'),
-      emptyOutDir: true,
-    },
-    clearScreen: false,
-    server: {
-      hmr: {
-        overlay: false,
-      },
-      host: true,
-      port: vitePort,
-      allowedHosts: true,
-      cors: true,
-      proxy: {
-        '/api': {
-          target: 'http://localhost:3001',
-          changeOrigin: true,
-          secure: false,
-          ws: true,
-          configure: (proxy, options) => {
-            proxy.on('error', (err, req, res) => {
-              console.log('proxy error', err);
-            });
-            proxy.on('proxyReq', (proxyReq, req, res) => {
-              console.log('Sending Request to the Target:', req.method, req.url);
-            });
-            proxy.on('proxyRes', (proxyRes, req, res) => {
-              console.log('Received Response from the Target:', proxyRes.statusCode, req.url);
-            });
-          },
-        },
+    {
+      name: 'add-cors-headers',
+      apply: 'serve',
+      configureServer(server) {
+        server.middlewares.use((req, res, next) => {
+          res.setHeader('Access-Control-Allow-Origin', '*');
+          res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+          res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+          if (req.method === 'OPTIONS') {
+            res.statusCode = 204;
+            return res.end();
+          }
+          next();
+        });
       },
     },
-    css: {
-      devSourcemap: true,
+  ],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
     },
-    esbuild: {
-      sourcemap: true,
-    },
-  };
-});
+  },
+  server: {
+    port: vitePort,
+  },
+  build: {
+    outDir: 'dist',
+  },
+}));
